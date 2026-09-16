@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>College ERP | {{ user.role }} Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20260916-archives') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20260916-archive-details') }}">
 </head>
 <body class="app-page" data-role="{{ user.role }}">
   {% macro complaint_table(rows, limit=0) %}
@@ -56,9 +56,9 @@
       <div class="panel">
         <div class="section-head"><div><h2 data-i18n>Archives</h2><p data-i18n>Deleted and completed records are stored here.</p></div></div>
         <h3 data-i18n>Archived Complaints</h3>
-        <div class="table-wrap"><table><thead><tr><th data-i18n>Complaint ID</th><th data-i18n>Department</th><th data-i18n>Subject</th><th data-i18n>Priority</th><th data-i18n>Status</th><th data-i18n>Archive Reason</th></tr></thead><tbody>{% for item in archived_complaints %}<tr><td><strong>{{ item.id }}</strong></td><td data-value="{{ item.department }}">{{ item.department }}</td><td>{{ item.subject }}</td><td data-value="{{ item.priority }}">{{ item.priority }}</td><td data-value="{{ item.status }}">{{ item.status }}</td><td data-value="{{ item.archive_reason }}">{{ item.archive_reason }}</td></tr>{% endfor %}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th data-i18n>Complaint ID</th><th data-i18n>Department</th><th data-i18n>Subject</th><th data-i18n>Priority</th><th data-i18n>Status</th><th data-i18n>Archive Reason</th><th data-i18n>Archived On</th></tr></thead><tbody>{% for item in archived_complaints %}<tr class="record-row archive-row" data-kind="complaints" data-archived="true" data-record='{{ item|tojson }}'><td><strong>{{ item.id }}</strong></td><td data-value="{{ item.department }}">{{ item.department }}</td><td>{{ item.subject }}</td><td data-value="{{ item.priority }}">{{ item.priority }}</td><td data-value="{{ item.status }}">{{ item.status }}</td><td><span class="archive-pill {{ item.archive_reason|lower }}" data-value="{{ item.archive_reason }}">{{ item.archive_reason }}</span></td><td>{{ item.archived_at or 'Not recorded' }}</td></tr>{% endfor %}</tbody></table></div>
         <h3 class="archive-heading" data-i18n>Archived Inventory Requests</h3>
-        <div class="table-wrap"><table><thead><tr><th data-i18n>Request ID</th><th data-i18n>Department</th><th data-i18n>Item</th><th data-i18n>Quantity</th><th data-i18n>Priority</th><th data-i18n>Status</th><th data-i18n>Archive Reason</th></tr></thead><tbody>{% for item in archived_inventory %}<tr><td><strong>{{ item.id }}</strong></td><td data-value="{{ item.department }}">{{ item.department }}</td><td>{{ item.item }}</td><td>{{ item.quantity }}</td><td data-value="{{ item.priority }}">{{ item.priority }}</td><td data-value="{{ item.status }}">{{ item.status }}</td><td data-value="{{ item.archive_reason }}">{{ item.archive_reason }}</td></tr>{% endfor %}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th data-i18n>Request ID</th><th data-i18n>Department</th><th data-i18n>Item</th><th data-i18n>Quantity</th><th data-i18n>Priority</th><th data-i18n>Status</th><th data-i18n>Archive Reason</th><th data-i18n>Archived On</th></tr></thead><tbody>{% for item in archived_inventory %}<tr class="record-row archive-row" data-kind="inventory" data-archived="true" data-record='{{ item|tojson }}'><td><strong>{{ item.id }}</strong></td><td data-value="{{ item.department }}">{{ item.department }}</td><td>{{ item.item }}</td><td>{{ item.quantity }}</td><td data-value="{{ item.priority }}">{{ item.priority }}</td><td data-value="{{ item.status }}">{{ item.status }}</td><td><span class="archive-pill {{ item.archive_reason|lower }}" data-value="{{ item.archive_reason }}">{{ item.archive_reason }}</span></td><td>{{ item.archived_at or 'Not recorded' }}</td></tr>{% endfor %}</tbody></table></div>
       </div>
     </section>
   </main>
@@ -97,6 +97,6 @@
   </div>
   <div id="toast" class="toast"></div>
   <script>window.erpUser={{ {'role': user.role, 'department': user.department}|tojson }};</script>
-  <script src="{{ url_for('static', filename='app.js', v='20260916-archives') }}"></script>
+  <script src="{{ url_for('static', filename='app.js', v='20260916-archive-details') }}"></script>
 </body>
 </html>
