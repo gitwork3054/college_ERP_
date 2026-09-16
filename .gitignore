@@ -1,0 +1,11 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.exe
+*.dmg
+.env
+.DS_Store
+college_erp.db
+uploads/
