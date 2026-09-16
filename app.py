@@ -20,14 +20,58 @@ app.config.update(MAX_CONTENT_LENGTH=10 * 1024 * 1024, SESSION_COOKIE_HTTPONLY=T
                   SESSION_COOKIE_SAMESITE="Lax")
 
 USERS = {
-    "dean": {"password": "1234", "role": "Dean", "department": None, "name": "College Dean"},
-    "hod_hospital": {"password": "1234", "role": "HOD", "department": "Hospital", "name": "Hospital HOD"},
-    "hod_computer": {"password": "1234", "role": "HOD", "department": "Computer Department", "name": "Computer Department HOD"},
-    "hod_mechanical": {"password": "1234", "role": "HOD", "department": "Mechanical Department", "name": "Mechanical Department HOD"},
-    "hod_electrical": {"password": "1234", "role": "HOD", "department": "Electrical Department", "name": "Electrical Department HOD"},
-    "hod_civil": {"password": "1234", "role": "HOD", "department": "Civil Department", "name": "Civil Department HOD"},
+    "dean": {
+        "password": "1234",
+        "role": "Dean",
+        "department": None,
+        "name": "College Dean",
+    },
+    "hod_anatomy": {
+        "password": "1234",
+        "role": "HOD",
+        "department": "Anatomy",
+        "name": "Anatomy HOD",
+    },
+    "hod_physiology": {
+        "password": "1234",
+        "role": "HOD",
+        "department": "Physiology",
+        "name": "Physiology HOD",
+    },
+    "hod_biochemistry": {
+        "password": "1234",
+        "role": "HOD",
+        "department": "Biochemistry",
+        "name": "Biochemistry HOD",
+    },
+    "hod_pathology": {
+        "password": "1234",
+        "role": "HOD",
+        "department": "Pathology",
+        "name": "Pathology HOD",
+    },
+    "hod_microbiology": {
+        "password": "1234",
+        "role": "HOD",
+        "department": "Microbiology",
+        "name": "Microbiology HOD",
+    },
+    "hod_pharmacology": {
+        "password": "1234",
+        "role": "HOD",
+        "department": "Pharmacology",
+        "name": "Pharmacology HOD",
+    },
 }
-DEPARTMENTS = ["Hospital", "Computer Department", "Mechanical Department", "Electrical Department", "Civil Department"]
+
+DEPARTMENTS = [
+    "Anatomy",
+    "Physiology",
+    "Biochemistry",
+    "Pathology",
+    "Microbiology",
+    "Pharmacology",
+]
 ALLOWED_STATUS = {"Pending", "Received", "Under Review", "Approved", "Rejected", "Resolved", "Completed"}
 ALLOWED_PRIORITY = {"Low", "Medium", "High", "Urgent"}
 
