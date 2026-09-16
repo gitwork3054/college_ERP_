@@ -4,6 +4,7 @@ from datetime import datetime
 from functools import wraps
 from pathlib import Path
 from uuid import uuid4
+from zoneinfo import ZoneInfo
 
 from flask import (Flask, flash, jsonify, redirect, render_template, request,
                    send_from_directory, session, url_for)
@@ -59,6 +60,8 @@ def init_db():
                 connection.execute(f"ALTER TABLE {table} ADD COLUMN archived INTEGER DEFAULT 0")
             if "archive_reason" not in columns:
                 connection.execute(f"ALTER TABLE {table} ADD COLUMN archive_reason TEXT DEFAULT ''")
+            if "archived_at" not in columns:
+                connection.execute(f"ALTER TABLE {table} ADD COLUMN archived_at TEXT DEFAULT ''")
         if not connection.execute("SELECT 1 FROM complaints LIMIT 1").fetchone():
             complaints = [
                 ("CMP-1001", "Anatomy", "Equipment", "Dissection table maintenance", "Urgent", "Pending", "20/08/2026", "A dissection table requires immediate maintenance.", "", ""),
@@ -222,9 +225,10 @@ def update_record(kind, item_id):
                 return jsonify(error="Invalid status."), 400
             should_archive = status in {"Completed", "Resolved"}
             archive_reason = "Completed" if should_archive else ""
+            archived_at = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d/%m/%Y, %I:%M %p") if should_archive else ""
             connection.execute(
-                f"UPDATE {kind} SET status=?, remarks=?, archived=?, archive_reason=? WHERE id=?",
-                (status, remarks, 1 if should_archive else 0, archive_reason, item_id),
+                f"UPDATE {kind} SET status=?, remarks=?, archived=?, archive_reason=?, archived_at=? WHERE id=?",
+                (status, remarks, 1 if should_archive else 0, archive_reason, archived_at, item_id),
             )
         else:
             if record["department"] != session.get("department"):
@@ -272,9 +276,10 @@ def delete_record(kind, item_id):
             return jsonify(error="Record not found."), 404
         if session.get("role") != "Dean" and record["department"] != session.get("department"):
             return jsonify(error="You can delete only your department records."), 403
+        archived_at = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d/%m/%Y, %I:%M %p")
         connection.execute(
-            f"UPDATE {kind} SET archived=1, archive_reason='Deleted' WHERE id=?",
-            (item_id,),
+            f"UPDATE {kind} SET archived=1, archive_reason='Deleted', archived_at=? WHERE id=?",
+            (archived_at, item_id),
         )
     return jsonify(ok=True, message="Record moved to Archives.")
 
