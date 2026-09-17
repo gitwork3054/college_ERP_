@@ -1,13 +1,15 @@
 import os
 import sqlite3
+import csv
+from io import StringIO
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
-from flask import (Flask, flash, jsonify, redirect, render_template, request,
-                   send_from_directory, session, url_for)
+from flask import (Flask, Response, flash, jsonify, redirect, render_template,
+                   request, send_from_directory, session, url_for)
 from werkzeug.utils import secure_filename
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -159,6 +161,49 @@ def dashboard():
                            archived_complaints=visible_rows("complaints", archived=True),
                            archived_inventory=visible_rows("inventory", archived=True),
                            departments=DEPARTMENTS, user=session)
+
+
+def csv_safe(value):
+    """Prevent spreadsheet formulas from being executed when the CSV is opened."""
+    text = "" if value is None else str(value)
+    return "'" + text if text.startswith(("=", "+", "-", "@")) else text
+
+
+@app.get("/reports/export.csv")
+@login_required
+def export_csv():
+    if session.get("role") != "Dean":
+        return jsonify(error="Only the Dean can download CSV reports."), 403
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["COLLEGE ERP REPORT"])
+    writer.writerow(["Generated On", datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d/%m/%Y, %I:%M %p")])
+    writer.writerow([])
+
+    with db() as connection:
+        complaints = connection.execute("SELECT * FROM complaints ORDER BY rowid DESC").fetchall()
+        inventory = connection.execute("SELECT * FROM inventory ORDER BY rowid DESC").fetchall()
+
+    writer.writerow(["COMPLAINTS"])
+    complaint_fields = ["id", "department", "category", "subject", "priority", "status", "date", "description", "remarks", "archive_reason", "archived_at"]
+    writer.writerow(["Complaint ID", "Department", "Category", "Subject", "Priority", "Status", "Date", "Description", "Dean Remarks", "Archive Reason", "Archived On"])
+    for row in complaints:
+        writer.writerow([csv_safe(row[field]) for field in complaint_fields])
+
+    writer.writerow([])
+    writer.writerow(["INVENTORY REQUESTS"])
+    inventory_fields = ["id", "department", "item", "quantity", "priority", "status", "date", "reason", "remarks", "archive_reason", "archived_at"]
+    writer.writerow(["Request ID", "Department", "Item", "Quantity", "Priority", "Status", "Date", "Reason", "Dean Remarks", "Archive Reason", "Archived On"])
+    for row in inventory:
+        writer.writerow([csv_safe(row[field]) for field in inventory_fields])
+
+    filename = f"college_erp_report_{datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%Y%m%d_%H%M')}.csv"
+    return Response(
+        "\ufeff" + output.getvalue(),
+        mimetype="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"', "Cache-Control": "no-store"},
+    )
 
 
 @app.post("/api/complaints")
