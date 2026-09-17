@@ -15,3 +15,4 @@
 @media(max-width:760px){.settings-grid{grid-template-columns:1fr}.filters{display:grid}.detail-row{grid-template-columns:1fr}.department-card>i{margin-left:auto}}
 .archive-heading{margin-top:28px;color:var(--navy)}
 .archive-row{cursor:pointer}.archive-row:hover{background:#eff6ff}.archive-pill{display:inline-block;padding:5px 10px;border-radius:999px;font-size:10px;font-weight:800}.archive-pill.deleted{background:#fee2e2;color:#b91c1c}.archive-pill.completed{background:#dcfce7;color:#15803d}.admin-update.archive-readonly{display:none}
+.download-link{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
